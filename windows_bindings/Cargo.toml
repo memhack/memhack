@@ -1,0 +1,11 @@
+[package]
+name = "windows_bindings"
+version = "0.8.0"
+authors = ["Jakobzs <31919330+Jakobzs@users.noreply.github.com>"]
+edition = "2018"
+
+[dependencies]
+windows = "0.8.0"
+
+[build-dependencies]
+windows = "0.8.0"
