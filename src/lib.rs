@@ -1,4 +1,5 @@
 use bindings::Windows::Win32::{
+    Debug::WriteProcessMemory,
     SystemServices::PROCESS_ACCESS_RIGHTS,
     WindowsAndMessaging::{MessageBoxA, HWND, MESSAGEBOX_STYLE},
 };
@@ -61,8 +62,7 @@ pub fn read_process_memory(process: HANDLE, addr: usize, amount: usize) -> Resul
     };
 
     if result.0 == 0 {
-        // Call GetLastError
-
+        // To get extended information, call GetLastError()
         let get_last_error = unsafe { GetLastError() };
 
         return Err(format!(
@@ -79,6 +79,33 @@ pub fn read_process_memory(process: HANDLE, addr: usize, amount: usize) -> Resul
     }
 
     Ok(vec)
+}
+
+pub fn write_process_memory(process: HANDLE, addr: usize, buffer: Vec<u8>) -> Result<(), String> {
+    let mut bytes_written: usize = 0;
+    let bytes_written_ptr: *mut usize = &mut bytes_written;
+
+    let result = unsafe {
+        WriteProcessMemory(
+            process,
+            addr as *mut c_void,
+            buffer.as_ptr() as *const c_void,
+            buffer.len(),
+            bytes_written_ptr,
+        )
+    };
+
+    if result.0 == 0 {
+        // To get extended information, call GetLastError()
+        let get_last_error = unsafe { GetLastError() };
+
+        return Err(format!(
+            "WriteProcessMemory failed, ensure the address is correct. GetLastError code: {}",
+            get_last_error
+        ));
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
