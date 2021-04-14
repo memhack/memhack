@@ -6,7 +6,7 @@ fn main() {
 
     let process_unwrap = process.unwrap();
 
-    // The address to write to
+    // The address to read/write to
     let address = 0xe8e0060;
 
     // Write a byte to memory
@@ -15,7 +15,7 @@ fn main() {
 
     memhack::write_process_memory(process_unwrap, address, vec).unwrap();
 
-    // Read a byte from memory
+    // Read 10 bytes from memory
     let program_bytes = memhack::read_process_memory(process_unwrap, address, 10);
     println!("Byte: {}", program_bytes.unwrap().get(0).unwrap());
 }
