@@ -9,4 +9,4 @@ repository = "https://github.com/memhack/memhack"
 
 [dependencies]
 bindings = { package = "windows_bindings", path = "windows_bindings" }
-sysinfo = "0.17.0"
+sysinfo = "0.19.0"

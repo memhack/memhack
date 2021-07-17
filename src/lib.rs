@@ -18,7 +18,7 @@ pub fn get_processes(process_name: &str) -> Vec<usize> {
     let sys = System::new_all();
     let mut process_vec = Vec::new();
 
-    for (pid, process) in sys.get_processes() {
+    for (pid, process) in sys.processes().iter() {
         if process.name() == process_name {
             process_vec.push(pid.clone());
         }
