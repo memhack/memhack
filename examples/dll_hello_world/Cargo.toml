@@ -14,11 +14,5 @@ memhack = { path= "../../" }
 [dependencies.windows]
 version = "0.32.0"
 features = [
-    "Win32_Foundation",
-    "Win32_System_Console",
-    "Win32_System_LibraryLoader",
-    "Win32_System_ProcessStatus",
-    "Win32_System_Threading",
-    "Win32_System_Diagnostics_Debug",
     "Win32_System_SystemServices"
 ]
