@@ -18,4 +18,6 @@ pub extern "stdcall" fn DllMain(module: HINSTANCE, reason: u32, reserved: *mut c
 
 fn start(module: HINSTANCE) {
     memhack::open_debug_console().unwrap();
+
+    println!("Hello world!");
 }
