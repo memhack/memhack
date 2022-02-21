@@ -217,7 +217,8 @@ fn open_debug_console() -> Result<(), Box<dyn Error>> {
         Err(format!(
             "failed opening console, GetLastError: {}",
             unsafe { GetLastError() }.0
-        ))?
+        )
+        .into())
     } else {
         Ok(())
     }
@@ -228,7 +229,8 @@ pub fn close_debug_console() -> Result<(), Box<dyn Error>> {
         Err(format!(
             "failed closing console, GetLastError: {}",
             unsafe { GetLastError() }.0
-        ))?
+        )
+        .into())
     } else {
         Ok(())
     }
