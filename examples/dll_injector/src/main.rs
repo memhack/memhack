@@ -2,7 +2,7 @@ use std::{
     env,
     ffi::{c_void, CString},
 };
-use sysinfo::{ProcessExt, System, SystemExt};
+use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 use windows::Win32::{
     Foundation::{CloseHandle, BOOL, HANDLE, PSTR},
     Security::SECURITY_ATTRIBUTES,
@@ -63,13 +63,13 @@ fn main() {
 }
 
 // Find the id of a process using its name
-pub fn get_process_id(process_name: &str) -> Vec<usize> {
+pub fn get_process_id(process_name: &str) -> Vec<u32> {
     let sys = System::new_all();
     let mut process_vec = Vec::new();
 
     for (pid, process) in sys.processes() {
         if process.name() == process_name {
-            process_vec.push(pid.clone());
+            process_vec.push(pid.as_u32());
         }
     }
 
@@ -77,11 +77,10 @@ pub fn get_process_id(process_name: &str) -> Vec<usize> {
 }
 
 // Open a process and get the handle to it
-pub fn open_process(process_id: usize) -> Result<HANDLE, String> {
+pub fn open_process(process_id: u32) -> Result<HANDLE, String> {
     let process_rights = PROCESS_ACCESS_RIGHTS(0x1F0FFF);
 
-    let process_handle =
-        unsafe { OpenProcess(process_rights, BOOL::from(false), process_id as u32) };
+    let process_handle = unsafe { OpenProcess(process_rights, BOOL::from(false), process_id) };
 
     if process_handle.0 == 0 {
         Err(format!("failed opening process with id: {}", process_id))
