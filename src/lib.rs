@@ -1,38 +1,29 @@
-use sysinfo::{Process, ProcessExt, System, SystemExt};
-use windows::Win32::Foundation::{BOOL, HANDLE, HINSTANCE};
-use windows::Win32::System::Threading::{OpenProcess, PROCESS_ACCESS_RIGHTS};
-use windows::Win32::{
-    Foundation::{GetLastError, PSTR},
-    System::{
-        Console::{AllocConsole, FreeConsole},
-        LibraryLoader::{FreeLibraryAndExitThread, GetModuleHandleA},
-        ProcessStatus::{K32GetModuleInformation, MODULEINFO},
-        Threading::GetCurrentProcess,
-    },
-};
-
 use std::{ffi::c_void, vec};
+use sysinfo::{PidExt, ProcessExt, System, SystemExt};
+use windows::Win32::Foundation::GetLastError;
+use windows::Win32::Foundation::{BOOL, HANDLE};
+use windows::Win32::System::Diagnostics::Debug::{ReadProcessMemory, WriteProcessMemory};
+use windows::Win32::System::Threading::{OpenProcess, PROCESS_ACCESS_RIGHTS};
 
-pub fn get_processes(process_name: &str) -> Vec<usize> {
+pub fn get_processes(process_name: &str) -> Vec<u32> {
     let sys = System::new_all();
     let mut process_vec = Vec::new();
 
     for (pid, process) in sys.processes().iter() {
         if process.name() == process_name {
-            process_vec.push(pid.clone());
+            process_vec.push(pid.clone().as_u32());
         }
     }
 
     process_vec
 }
 
-pub fn open_process(process_id: usize) -> Result<HANDLE, String> {
-    let process_rights = PROCESS_ACCESS_RIGHTS::from(0x1F0FFF);
+pub fn open_process(process_id: u32) -> Result<HANDLE, String> {
+    let process_rights = PROCESS_ACCESS_RIGHTS(0x1F0FFF);
 
-    let process_handle =
-        unsafe { OpenProcess(process_rights, BOOL::from(false), process_id as u32) };
+    let process_handle = unsafe { OpenProcess(process_rights, BOOL::from(false), process_id) };
 
-    if process_handle.is_null() {
+    if process_handle.0 == 0 {
         Err(format!("failed opening process with id: {}", process_id))
     } else {
         Ok(process_handle)
@@ -61,7 +52,7 @@ pub fn read_process_memory(process: HANDLE, addr: usize, amount: usize) -> Resul
 
         return Err(format!(
             "ReadProcessMemory failed, ensure the address is correct. GetLastError code: {}",
-            get_last_error
+            get_last_error.0
         ));
     }
 
@@ -95,7 +86,7 @@ pub fn write_process_memory(process: HANDLE, addr: usize, buffer: Vec<u8>) -> Re
 
         return Err(format!(
             "WriteProcessMemory failed, ensure the address is correct. GetLastError code: {}",
-            get_last_error
+            get_last_error.0
         ));
     }
 
