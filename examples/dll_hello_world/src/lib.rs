@@ -1,9 +1,13 @@
 use std::ffi::c_void;
-use windows::Win32::Foundation::{BOOL, HINSTANCE};
+use windows::Win32::{
+    Foundation::{BOOL, HINSTANCE},
+    System::SystemServices::{
+        DLL_PROCESS_ATTACH, DLL_PROCESS_DETACH, DLL_THREAD_ATTACH, DLL_THREAD_DETACH,
+    },
+};
 
 #[no_mangle]
 #[allow(unused_variables)]
-#[allow(non_snake_case)]
 pub extern "stdcall" fn DllMain(module: HINSTANCE, reason: u32, reserved: *mut c_void) -> BOOL {
     match reason {
         DLL_PROCESS_ATTACH => start(module),
@@ -16,8 +20,10 @@ pub extern "stdcall" fn DllMain(module: HINSTANCE, reason: u32, reserved: *mut c
     BOOL::from(true)
 }
 
-fn start(module: HINSTANCE) {
-    memhack::open_debug_console().unwrap();
+fn start(_module: HINSTANCE) {
+    if let Err(err) = memhack::open_debug_console() {
+        println!("Error opening console: {}", err);
+    };
 
     println!("Hello world!");
 }
