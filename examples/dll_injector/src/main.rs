@@ -120,11 +120,13 @@ fn write_process_memory(
 }
 
 fn get_module_library(module: &str, function: &str) -> unsafe extern "system" fn() -> isize {
-    let test = CString::new(module).unwrap();
+    let module_cstring = CString::new(module).unwrap();
+    let module_raw = module_cstring.into_raw() as *mut u8;
 
-    let raw = test.into_raw() as *mut u8;
+    let function_cstring = CString::new(function).unwrap();
+    let function_raw = function_cstring.into_raw() as *mut u8;
 
-    unsafe { GetProcAddress(GetModuleHandleA(PSTR(raw)), function) }.unwrap()
+    unsafe { GetProcAddress(GetModuleHandleA(PSTR(module_raw)), PSTR(function_raw)) }.unwrap()
 }
 
 fn create_remote_thread(
