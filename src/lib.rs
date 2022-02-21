@@ -1,5 +1,15 @@
 use sysinfo::{Process, ProcessExt, System, SystemExt};
+use windows::Win32::Foundation::{BOOL, HANDLE, HINSTANCE};
 use windows::Win32::System::Threading::{OpenProcess, PROCESS_ACCESS_RIGHTS};
+use windows::Win32::{
+    Foundation::{GetLastError, PSTR},
+    System::{
+        Console::{AllocConsole, FreeConsole},
+        LibraryLoader::{FreeLibraryAndExitThread, GetModuleHandleA},
+        ProcessStatus::{K32GetModuleInformation, MODULEINFO},
+        Threading::GetCurrentProcess,
+    },
+};
 
 use std::{ffi::c_void, vec};
 
@@ -16,16 +26,11 @@ pub fn get_processes(process_name: &str) -> Vec<usize> {
     process_vec
 }
 
-pub fn open_process(process_id: usize) -> Result<Windows::Win32::SystemServices::HANDLE, String> {
+pub fn open_process(process_id: usize) -> Result<HANDLE, String> {
     let process_rights = PROCESS_ACCESS_RIGHTS::from(0x1F0FFF);
 
-    let process_handle = unsafe {
-        OpenProcess(
-            process_rights,
-            Windows::Win32::SystemServices::BOOL::from(false),
-            process_id as u32,
-        )
-    };
+    let process_handle =
+        unsafe { OpenProcess(process_rights, BOOL::from(false), process_id as u32) };
 
     if process_handle.is_null() {
         Err(format!("failed opening process with id: {}", process_id))
