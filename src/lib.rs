@@ -212,7 +212,7 @@ pub fn pattern_scan_singlethread() {
     //pattern_scan_actual(1)
 }
 
-fn open_debug_console() -> Result<(), Box<dyn Error>> {
+pub fn open_debug_console() -> Result<(), Box<dyn Error>> {
     if unsafe { AllocConsole() }.0 == 0 {
         Err(format!(
             "failed opening console, GetLastError: {}",
