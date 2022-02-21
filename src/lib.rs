@@ -1,16 +1,5 @@
-use bindings::Windows::Win32::{
-    Debug::WriteProcessMemory,
-    SystemServices::PROCESS_ACCESS_RIGHTS,
-    WindowsAndMessaging::{MessageBoxA, HWND, MESSAGEBOX_STYLE},
-};
-use bindings::Windows::{
-    self,
-    Win32::{Debug::ReadProcessMemory, SystemServices::OpenProcess},
-};
-
-use bindings::Windows::Win32::Debug::GetLastError;
 use sysinfo::{Process, ProcessExt, System, SystemExt};
-use Windows::Win32::SystemServices::HANDLE;
+use windows::Win32::System::Threading::{OpenProcess, PROCESS_ACCESS_RIGHTS};
 
 use std::{ffi::c_void, vec};
 
