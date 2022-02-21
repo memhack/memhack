@@ -137,13 +137,13 @@ pub fn pattern_scan(str: &str, pattern_and_mask: &str) -> Result<usize, Box<dyn 
 
     let pattern_and_mask_string = String::from(pattern_and_mask);
 
-    for str in pattern_and_mask_string.split(" ") {
+    for str in pattern_and_mask_string.split(' ') {
         if str.chars().count() > 2 {
-            Err(format!("Element {}'s length is greater than 2", str))?
+            return Err(format!("Element {}'s length is greater than 2", str).into());
         }
 
         if str == "??" {
-            Err("Only a single question mark should be used")?
+            return Err("Only a single question mark should be used".into());
         }
 
         mask.push(str);
@@ -173,7 +173,7 @@ pub fn pattern_scan(str: &str, pattern_and_mask: &str) -> Result<usize, Box<dyn 
         }
     }
 
-    Err("failed finding signature")?
+    return Err("failed finding signature".into());
 }
 
 fn get_module_info(module: &str) -> Option<MODULEINFO> {
