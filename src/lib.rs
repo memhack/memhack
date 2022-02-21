@@ -21,7 +21,7 @@ pub fn get_processes(process_name: &str) -> Vec<u32> {
 
     for (pid, process) in sys.processes().iter() {
         if process.name() == process_name {
-            process_vec.push(pid.clone().as_u32());
+            process_vec.push(pid.as_u32());
         }
     }
 
@@ -103,7 +103,7 @@ pub fn write_process_memory(process: HANDLE, addr: usize, buffer: Vec<u8>) -> Re
     Ok(())
 }
 
-pub fn start(module: HINSTANCE) {
+pub fn start(_module: HINSTANCE) {
     // Debug console
     open_debug_console().unwrap();
 
@@ -126,7 +126,7 @@ pub fn start(module: HINSTANCE) {
 // Sample pattern scanning reference:
 // https://www.unknowncheats.me/forum/league-of-legends/424623-internal-pattern-scanning.html
 
-fn pattern_scan(str: &str, pattern_and_mask: &str) -> Result<usize, Box<dyn Error>> {
+pub fn pattern_scan(str: &str, pattern_and_mask: &str) -> Result<usize, Box<dyn Error>> {
     let module = get_module_info(str).expect("failed getting module");
 
     let base = module.lpBaseOfDll as *mut u8;
@@ -204,11 +204,11 @@ fn get_module_info(module: &str) -> Option<MODULEINFO> {
     }
 }
 
-fn pattern_scan_multithread() {
+pub fn pattern_scan_multithread() {
     //pattern_scan_actual(num_cpus::get())
 }
 
-fn pattern_scan_singlethread() {
+pub fn pattern_scan_singlethread() {
     //pattern_scan_actual(1)
 }
 
@@ -223,7 +223,7 @@ fn open_debug_console() -> Result<(), Box<dyn Error>> {
     }
 }
 
-fn close_debug_console() -> Result<(), Box<dyn Error>> {
+pub fn close_debug_console() -> Result<(), Box<dyn Error>> {
     if unsafe { FreeConsole() }.0 == 0 {
         Err(format!(
             "failed closing console, GetLastError: {}",
@@ -234,7 +234,7 @@ fn close_debug_console() -> Result<(), Box<dyn Error>> {
     }
 }
 
-fn close_cheat(module: HINSTANCE) {
+pub fn close_cheat(module: HINSTANCE) {
     unsafe {
         FreeLibraryAndExitThread(module, 0);
     }
